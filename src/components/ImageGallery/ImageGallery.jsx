@@ -1,14 +1,29 @@
-import React from 'react';
-import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
+import React, { Component } from "react";
+import ImageApi from "components/getImages";
 
-const ImageGallery = ({ images, onItemClick }) => {
-  return (
-    <ul className="gallery">
-      {images.map((image) => (
-        <ImageGalleryItem key={image.id} image={image} onItemClick={onItemClick} />
-      ))}
-    </ul>
-  );
+const Status = {
+  IDLE: 'idle',
+  PENDING: 'pending',
+  RESOLVED: 'resolved',
+  REJECTED: 'rejected',
 };
+const API_KEY = "37349806-fbd17cc6692905f34ac659bee";
 
-export default ImageGallery;
+export default class ImageGallery extends Component{
+
+  componentDidUpdate(prevProps, prevState){
+    if(prevProps.images !== this.props.images){
+
+      
+    };
+  };
+
+  render() {
+    return(
+      <div>
+        <h1>Images</h1>
+        <p>{this.props.images}</p>
+        </div>
+    )
+  };
+};
