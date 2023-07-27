@@ -7,12 +7,6 @@ const Modal = ({ imageUrl, onClose }) => {
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.code === 'Escape') {
-      onClose();
-    }
-  };
-
   return (
     <div className="overlay" onClick={handleOverlayClick}>
       <div className="modal">
