@@ -2,22 +2,22 @@ import { Component} from "react";
 
 class Searchbar extends Component {
   state = {
-    images: '',
+    textSearch: '',
   };
 
   handleNameChange = (event) => {
-    this.setState({ images: event.currentTarget.value.toLowerCase() });
+    this.setState({ textSearch: event.currentTarget.value.toLowerCase() });
   };
   
   handleSubmit = (event) => {
     event.preventDefault();
 
-    if(this.state.images.trim() === ''){
+    if(this.state.textSearch.trim() === ''){
       return alert('Please enter something in the search bar');
     };
 
-    this.props.onSubmit(this.state.images);
-    this.setState({ images: '' });
+    this.props.onSubmit(this.state.textSearch);
+    this.setState({ textSearch: '' });
   };
 
   render() {
