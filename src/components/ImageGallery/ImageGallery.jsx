@@ -24,9 +24,8 @@ export default class ImageGallery extends Component{
       this.setState({ status: Status.PENDING });
 
       getImages(textSearch)
-      .then(res => res.json())
       .then((image) => this.setState({ images: image.hits, status : Status.RESOLVED }))
-      .catch(error => this.setState({ error, status: Status.REJECTED }));
+      // .catch(error => this.setState({ error, status: Status.REJECTED }));
     };
   };
 
@@ -41,8 +40,8 @@ export default class ImageGallery extends Component{
       return <div><h1>Loading...</h1></div>
     };
 
-    if(status === 'rejected') {
-      return alert('Ooooops', error);
+    if(status === 'rejected'){
+      return alert(error, 'OOOOps')
     }
 
     if(status === 'resolved') {
