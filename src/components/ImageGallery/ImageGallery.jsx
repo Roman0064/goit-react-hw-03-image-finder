@@ -1,29 +1,36 @@
 import React, { Component } from "react";
-import ImageApi from "components/getImages";
+import { getImages } from "services/getImages";
 
-const Status = {
-  IDLE: 'idle',
-  PENDING: 'pending',
-  RESOLVED: 'resolved',
-  REJECTED: 'rejected',
-};
-const API_KEY = "37349806-fbd17cc6692905f34ac659bee";
+// const Status = {
+//   IDLE: 'idle',
+//   PENDING: 'pending',
+//   RESOLVED: 'resolved',
+//   REJECTED: 'rejected',
+// };
 
 export default class ImageGallery extends Component{
+  state = {
+    value: '',
+    images: [],
+
+  };
 
   componentDidUpdate(prevProps, prevState){
-    if(prevProps.images !== this.props.images){
-
-      
+    const {textSearch} = this.props;
+    if(prevProps.textSearch !== this.props.textSearch){
+    getImages(textSearch)
+    .then(res => res.json())
+    .then((image) => this.setState({images: image.hits}));
     };
   };
 
   render() {
-    return(
+    return( 
       <div>
-        <h1>Images</h1>
-        <p>{this.props.images}</p>
-        </div>
+        {this.state.images.map((el)=>(
+          <li><img src={el.webformatURL} alt={el.type} /></li>
+        ))}
+      </div>
     )
   };
 };
