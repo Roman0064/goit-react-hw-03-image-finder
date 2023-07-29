@@ -18,7 +18,6 @@ export default class ImageGallery extends Component{
 
   static propTypes = {
     textSearch: PropTypes.string.isRequired,
-    handleImageClick: PropTypes.func.isRequired,
   };
 
 
@@ -28,43 +27,49 @@ export default class ImageGallery extends Component{
     page: 1,
     totalPages: 0,
     status: Status.IDLE,
+    textSearch: '',
   };
-
-  handleLoadMore = () => {
-    this.setState((prevState) => ({page: prevState.page + 1}),this.loadImages);
-  }
 
   componentDidUpdate(prevProps, prevState){
     const {textSearch} = this.props;
 
     if(prevProps.textSearch !== textSearch){
-      this.setState({page: 1, status: Status.PENDING}, this.loadImages);
+      this.setState({ page: 1, images: [], status: Status.PENDING, textSearch }, this.loadImages);
     };
   };
 
   loadImages(){
-    const { textSearch } = this.props;
-    const { page } = this.state;
+    const { textSearch, page } = this.state;
 
     getImages(textSearch, page)
       .then((res) => res.json())
       .then((data) => {
-        this.setState((prevState) => ({
-          images: [...prevState.images, ...data.hits],
-          totalPages: data.totalHits / 12,
-          status: Status.RESOLVED,
-        }));
+        if (data.hits.length === 0) {
+          this.setState({ status: Status.RESOLVED });
+          alert("No images found!");
+        } else {
+          this.setState((prevState) => ({
+            images: [...prevState.images, ...data.hits],
+            totalPages: Math.ceil(data.totalHits / 12),
+            status: Status.RESOLVED,
+          }));
+        }
       })
       .catch(() => {
         this.setState({status: Status.REJECTED});
       })
   };
 
+  handleLoadMore = () => {
+    this.setState((prevState) => ({ page: prevState.page + 1 }), this.loadImages);
+  };
+  
+
   render() {
     const { images, status, page, totalPages } = this.state;
 
       if(status === 'pending') {
-        return <Loader /> ;
+        return <Loader />  ;
       };
 
       if(status === 'rejected') {
@@ -75,7 +80,7 @@ export default class ImageGallery extends Component{
         return <div className={css.wrapper}>
             <ul className={css.ul_item}>
               {images.map((image) => (
-              <ImageGalleryItem key={image.id} item={image} onClick={() => this.handleImageClick(image)} />
+              <ImageGalleryItem key={image.id} item={image} />
               ))}
             </ul>
             {page < totalPages && <Button onClick={this.handleLoadMore}/>}
