@@ -4,7 +4,7 @@ import { getImages } from "services/getImages";
 import {ImageGalleryItem} from '../ImageGalleryItem/ImageGalleryItem'
 import {Button} from '../Button/Button'
 import { Loader } from "components/Loader/Loader";
-// import Modal from "components/Modal/Modal";
+import Modal from "components/Modal/Modal";
 import css from './ImageGallery.module.css'
 
 const Status = {
@@ -28,6 +28,8 @@ export default class ImageGallery extends Component{
     totalPages: 0,
     status: Status.IDLE,
     textSearch: '',
+    modal: {},
+    modalShow: false,
   };
 
   componentDidUpdate(prevProps, prevState){
@@ -63,10 +65,20 @@ export default class ImageGallery extends Component{
   handleLoadMore = () => {
     this.setState((prevState) => ({ page: prevState.page + 1 }), this.loadImages);
   };
-  
 
+  handleImageClick = (image) => {
+    this.toggleModal();
+    this.setState({modal : image.largeImageURL});
+  };
+
+  toggleModal= () =>{
+    this.setState(({ modalShow }) => ({
+        modalShow: !modalShow,
+    }));
+  };
+  
   render() {
-    const { images, status, page, totalPages } = this.state;
+    const { images, status, page, totalPages, modalShow, modal } = this.state;
 
       if(status === 'pending') {
         return <Loader />  ;
@@ -80,10 +92,11 @@ export default class ImageGallery extends Component{
         return <div className={css.wrapper}>
             <ul className={css.ul_item}>
               {images.map((image) => (
-              <ImageGalleryItem key={image.id} item={image} />
+              <ImageGalleryItem key={image.id} item={image} onClick={this.handleImageClick}/>
               ))}
             </ul>
             {page < totalPages && <Button onClick={this.handleLoadMore}/>}
+            {modalShow && <Modal item={modal} onClose={this.toggleModal}/>}
           </div>;
       };
   };
