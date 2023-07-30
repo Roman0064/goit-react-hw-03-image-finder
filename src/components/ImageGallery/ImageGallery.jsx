@@ -23,27 +23,32 @@ export default class ImageGallery extends Component{
 
   state = {
     images: [],
-    isLoading: false,
     page: 1,
     totalPages: 0,
     status: Status.IDLE,
     textSearch: '',
     modal: {},
     modalShow: false,
+    isLoading: false,
   };
 
   componentDidUpdate(prevProps, prevState){
     const {textSearch} = this.props;
 
-    if(prevProps.textSearch !== textSearch){
-      this.setState({ page: 1, images: [], status: Status.PENDING, textSearch }, this.loadImages);
+    if (prevProps.textSearch !== textSearch) {
+      this.setState({ page: 1, images: [], status: Status.PENDING, textSearch }, () => {
+        this.loadImages();
+      });
     };
-  };
+
+
+  }
 
   loadImages(){
     const { textSearch, page } = this.state;
-
-    getImages(textSearch, page)
+    
+      this.setState({isLoading: true});
+      getImages(textSearch, page)
       .then((res) => res.json())
       .then((data) => {
         if (data.hits.length === 0) {
@@ -60,10 +65,15 @@ export default class ImageGallery extends Component{
       .catch(() => {
         this.setState({status: Status.REJECTED});
       })
+      .finally(() => {
+        this.setState({isLoading: false});
+      })
   };
 
   handleLoadMore = () => {
-    this.setState((prevState) => ({ page: prevState.page + 1 }), this.loadImages);
+    this.setState((prevState) => ({ page: prevState.page + 1 }), () => {
+      this.loadImages();
+    });
   };
 
   handleImageClick = (image) => {
@@ -78,7 +88,7 @@ export default class ImageGallery extends Component{
   };
   
   render() {
-    const { images, status, page, totalPages, modalShow, modal } = this.state;
+    const { images, status, page, totalPages, modalShow, modal, isLoading } = this.state;
 
       if(status === 'pending') {
         return <Loader />  ;
@@ -95,7 +105,7 @@ export default class ImageGallery extends Component{
               <ImageGalleryItem key={image.id} item={image} onClick={this.handleImageClick}/>
               ))}
             </ul>
-            {page < totalPages && <Button onClick={this.handleLoadMore}/>}
+            {isLoading ? ( <Loader/>) : (page < totalPages && <Button onClick={this.handleLoadMore}/> )}
             {modalShow && <Modal item={modal} onClose={this.toggleModal}/>}
           </div>;
       };
